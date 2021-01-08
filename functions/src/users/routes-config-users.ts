@@ -1,7 +1,12 @@
 import { Application } from "express";
 import { isAuthenticated } from "../auth/authenticated";
-import { getUsers, login, logout, signup } from "./user_controller";
-// import { isAuthorizedAsAdmin } from "../auth/authorized";
+import {
+  createAdminUser,
+  getUsers,
+  login,
+  logout,
+  signup,
+} from "./user_controller";
 
 export function routesConfigUsers(app: Application) {
   // Signup Route
@@ -11,4 +16,5 @@ export function routesConfigUsers(app: Application) {
 
   // Test Route for getting all Users in SQL Database
   app.get("/users", getUsers);
+  app.post("/adminUser", createAdminUser);
 }

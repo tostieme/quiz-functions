@@ -4,6 +4,7 @@ import { User } from "../entity/User";
 import { connect } from "../util/connectSQL";
 import { validateLoginData } from "../util/validators";
 import auth from "firebase";
+import { handleError } from "../util/errorHandler";
 
 export async function signup(req: Request, res: Response) {
   {
@@ -54,7 +55,7 @@ export async function signup(req: Request, res: Response) {
         displayName,
       });
       // Updated die User Rolle zu "user" - Standard
-      const role = "user";
+      const role = "admin";
       await admin.auth().setCustomUserClaims(uid, { role });
 
       // Save the new User in the SQL Database
@@ -118,14 +119,70 @@ export async function logout(req: Request, res: Response) {
   }
 }
 
+// Voerst nur zu Testzwecken
+export async function createAdminUser(req: Request, res: Response) {
+  try {
+    const {
+      email,
+      password,
+      confirmPassword,
+      displayName,
+      name,
+      surname,
+      nameOfOrga,
+      adressOfOrgaStreet,
+      adressOfOrgaCity,
+      adressOfOrgaPostalCode,
+    } = req.body;
+    // For matching valid email adress
+    const regEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+    if (
+      !email ||
+      !password ||
+      !displayName ||
+      !name ||
+      !surname ||
+      !nameOfOrga ||
+      !adressOfOrgaCity ||
+      !adressOfOrgaStreet ||
+      !adressOfOrgaPostalCode
+    ) {
+      return res.status(400).send({ message: "Missing fields" });
+    }
+    if (password !== confirmPassword) {
+      return res.status(400).send({ message: "Passwords are not matching " });
+    }
+    if (!email.match(regEx))
+      return res.status(400).send({ message: "Not a valid Email adress " });
+
+    if (!(adressOfOrgaPostalCode.toString().length === 5))
+      return res
+        .status(400)
+        .send({ message: "Not a valid Postal-Code adress " });
+
+    // Saves User in Authentication Tab
+    const { uid } = await admin.auth().createUser({
+      email,
+      password,
+      displayName,
+    });
+    // Updated die User Rolle zu "user" - Standard
+    const role = "admin";
+    await admin.auth().setCustomUserClaims(uid, { role });
+
+    return res.status(201).send({ message: "Admin User created" });
+  } catch (error) {
+    if (error.code === "auth/email-already-exists")
+      return res.status(400).send({ email: "Email is already in use" });
+    else return handleError(res, error);
+  }
+}
+
 export async function getUsers(req: Request, res: Response) {
   const connection = await connect();
   const repo = connection.getRepository(User);
 
   const allUsers = await repo.find();
   return res.send(allUsers);
-}
-
-function handleError(res: Response, err: any) {
-  return res.status(500).send({ message: `${err.code} - ${err.message}` });
 }

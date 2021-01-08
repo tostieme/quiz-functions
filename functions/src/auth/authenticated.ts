@@ -21,11 +21,11 @@ export async function isAuthenticated(
       .verifyIdToken(token);
     console.log("decodedToken", JSON.stringify(decodedToken));
     res.locals = {
-      ...res.locals,
       uid: decodedToken.uid,
       role: decodedToken.role,
       email: decodedToken.email,
     };
+    console.log("Springe jetzt in authorized function");
     return next();
   } catch (err) {
     console.error(`${err.code} -  ${err.message}`);

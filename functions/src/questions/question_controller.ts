@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import * as admin from "firebase-admin";
+import { handleError } from "../util/errorHandler";
 
 // const admin.firestore() = admin.firestore();
 
@@ -37,9 +38,9 @@ export async function getOneQuestion(req: Request, res: Response) {
   }
 }
 
-export async function createOneQuestion(req, res) {
+export async function createOneQuestion(req: Request, res: Response) {
   try {
-    if (req.body.body.trim() === "") {
+    if (req.body.testFeld.trim() === "") {
       return res.status(400).json({ body: "Body must ne not empty" });
     }
     const questionCollection = admin.firestore().collection("questions");
@@ -50,8 +51,4 @@ export async function createOneQuestion(req, res) {
   } catch (error) {
     return handleError(res, error);
   }
-}
-
-function handleError(res: Response, err: any) {
-  return res.status(500).send({ message: `${err.code} - ${err.message}` });
 }
