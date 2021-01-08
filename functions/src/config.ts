@@ -1,38 +1,33 @@
-// import {
-//   ConnectionOptions,
-//   Connection,
-//   createConnection,
-//   getConnection,
-// } from "typeorm";
-// import "reflect-metadata";
+import { ConnectionOptions } from "typeorm";
+import "reflect-metadata";
 
-// // Will be true on deployed functions
-// export const prod = process.env.NODE_ENV === "production";
+// Will be true on deployed functions
+export const prod = process.env.NODE_ENV === "production";
 
-// export const config: ConnectionOptions = {
-//   name: "fun",
-//   type: "mysql",
-//   host: "127.0.0.1",
-//   port: 3306,
-//   username: "root", // review
-//   password: "root", // review
-//   database: "development",
-//   synchronize: true,
-//   logging: false,
-//   entities: ["lib/entity/**/*.js"],
+export const sqlConfig: ConnectionOptions = {
+  name: "fun",
+  type: "mysql",
+  host: "127.0.0.1",
+  port: 3306,
+  username: "root", // review
+  password: "root", // review
+  database: "development",
+  synchronize: true,
+  logging: false,
+  entities: ["lib/entity/**/*.js"],
 
-//   // Production Mode
-//   ...(prod && {
-//     database: "production",
-//     logging: false,
-//     // synchronize: false,
-//     extra: {
-//       socketPath: "/cloudsql/YOUR_CONNECTION_NAME", // change
-//     },
-//   }),
-// };
+  // Production Mode
+  ...(prod && {
+    database: "production",
+    logging: false,
+    // synchronize: false,
+    extra: {
+      socketPath: "/cloudsql/quiz-functions-c9bae:europe-west3:quiz-functions", // change
+    },
+  }),
+};
 
-export const config = {
+export const firebaseConfig = {
   // For Firebase JS SDK v7.20.0 and later, measurementId is optional
   apiKey: "AIzaSyDdMak4fnpI16b9Rfj7cPIR7vgrTegmjDA",
   authDomain: "quiz-functions-c9bae.firebaseapp.com",
