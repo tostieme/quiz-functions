@@ -1,8 +1,13 @@
 import { Request, Response } from "express";
 import { handleError } from "../util/errorHandler";
 
-export async function isAuthorizedAsUser() {
-  return (req: Request, res: Response, next: Function) => {
+export async function isAuthorizedAsUser(
+  req: Request,
+  res: Response,
+  next: Function
+) {
+  try {
+    console.log("In isAuthorizedAsUser Try Block");
     const { role } = res.locals;
     // const { id } = req.params;
 
@@ -11,9 +16,9 @@ export async function isAuthorizedAsUser() {
     if (!role) return res.status(403).send();
 
     if (role === "user") return next();
-
-    return res.status(403).send();
-  };
+  } catch (err) {
+    return handleError(res, err);
+  }
 }
 
 export async function isAuthorizedAsAdmin(
