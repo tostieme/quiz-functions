@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "quiz-functions-c9bae"
+    "default": "quiz-functions-c9bae",
+    "main": "fire-quizduell"
   }
 }

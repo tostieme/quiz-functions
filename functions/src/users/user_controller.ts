@@ -317,8 +317,9 @@ export async function promoteRole(req: Request, res: Response) {
   }
 }
 
+// TODO
 export async function updateUserData(req: Request, res: Response) {
-  const { uid } = req.params;
+  // const { uid } = req.params;
 }
 
 //TODO changePassword
