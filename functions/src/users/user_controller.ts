@@ -5,7 +5,6 @@ import { connect } from "../util/connectSQL";
 import { isEmail, validateLoginData } from "../util/validators";
 import auth from "firebase";
 import { handleError } from "../util/errorHandler";
-import { user } from "firebase-functions/lib/providers/auth";
 
 export async function signup(req: Request, res: Response) {
   {
