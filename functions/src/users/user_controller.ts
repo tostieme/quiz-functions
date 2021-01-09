@@ -180,6 +180,83 @@ export async function createAdminUser(req: Request, res: Response) {
   }
 }
 
+export async function createUser(req: Request, res: Response) {
+  try {
+    const {
+      email,
+      password,
+      confirmPassword,
+      displayName,
+      role,
+      name,
+      surname,
+      nameOfOrga,
+      adressOfOrgaStreet,
+      adressOfOrgaCity,
+      adressOfOrgaPostalCode,
+    } = req.body;
+
+    // For matching valid email adress
+    const regEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+    if (
+      !email ||
+      !password ||
+      !displayName ||
+      !role ||
+      !name ||
+      !surname ||
+      !nameOfOrga ||
+      !adressOfOrgaCity ||
+      !adressOfOrgaStreet ||
+      !adressOfOrgaPostalCode
+    ) {
+      return res.status(400).send({ message: "Missing fields" });
+    }
+    if (password !== confirmPassword) {
+      return res.status(400).send({ message: "Passwords are not matching " });
+    }
+    if (!email.match(regEx))
+      return res.status(400).send({ message: "Not a valid Email adress " });
+
+    if (!(adressOfOrgaPostalCode.toString().length === 5))
+      return res
+        .status(400)
+        .send({ message: "Not a valid Postal-Code adress " });
+
+    // Saves User in Authentication Tab
+    const { uid } = await admin.auth().createUser({
+      email,
+      password,
+      displayName,
+    });
+
+    // Updated die User Rolle zu "user" - Standard
+    await admin.auth().setCustomUserClaims(uid, { role });
+
+    // Save the new User in the SQL Database
+    const connection = await connect();
+    const repo = connection.getRepository(User);
+    const newUser = new User();
+    newUser.userID = uid;
+    newUser.email = email;
+    newUser.role = role;
+    newUser.name = name;
+    newUser.displayName = displayName;
+    newUser.surname = surname;
+    newUser.nameOfOrga = nameOfOrga;
+    newUser.adressOfOrgaStreet = adressOfOrgaStreet;
+    newUser.adressOfOrgaCity = adressOfOrgaCity;
+    newUser.adressOfOrgaPostalCode = adressOfOrgaPostalCode;
+    newUser.createdAt = new Date().toISOString();
+    await repo.save(newUser);
+
+    return res.status(201).send({ message: "User was created successfully" });
+  } catch (err) {
+    return handleError(res, err);
+  }
+}
+
 // Zeigt mir alle Nutzer in der SQL Datenbank
 export async function getUsers(req: Request, res: Response) {
   const connection = await connect();
@@ -220,4 +297,10 @@ export async function deleteUserFromDaba(req: Request, res: Response) {
   } catch (err) {
     return handleError(res, err);
   }
+}
+
+export async function promoteRole(req: Request, res: Response) {
+  const { uid } = req.params;
+  const role = "admin";
+  await admin.auth().setCustomUserClaims(uid, { role });
 }
