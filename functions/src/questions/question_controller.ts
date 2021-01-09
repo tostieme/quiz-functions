@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import * as admin from "firebase-admin";
 import { handleError } from "../util/errorHandler";
+import auth from "firebase";
 
 // const admin.firestore() = admin.firestore();
 
@@ -48,6 +49,30 @@ export async function createOneQuestion(req: Request, res: Response) {
       testFeld: req.body.testFeld,
     });
     return res.status(200).send({ message: "Question added successfully!" });
+  } catch (error) {
+    return handleError(res, error);
+  }
+}
+
+//delete a question
+export async function deleteQuestion(req: Request, res: Response) {
+  try {
+    const document = await admin
+      .firestore()
+      .doc(`/questions/${req.params.questionID}`);
+    const documentSnapshot = document.get();
+    const currentUserDisplayName = auth.auth().currentUser.displayName;
+    if (!(await documentSnapshot).exists) {
+      return res.status(403).send({ error: "Question not found" });
+    }
+    if (
+      (await documentSnapshot).data().displayName !== currentUserDisplayName
+    ) {
+      return res.status(403).send({ error: "Unauthorized" });
+    } else {
+      await document.delete();
+      return res.send({ message: "Question was deleted successfully" });
+    }
   } catch (error) {
     return handleError(res, error);
   }

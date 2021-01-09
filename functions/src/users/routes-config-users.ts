@@ -17,4 +17,5 @@ export function routesConfigUsers(app: Application) {
   // Test Route for getting all Users in SQL Database
   app.get("/users", getUsers);
   app.post("/adminUser", createAdminUser);
+  //
 }

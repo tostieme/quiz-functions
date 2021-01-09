@@ -179,6 +179,7 @@ export async function createAdminUser(req: Request, res: Response) {
   }
 }
 
+// Zeigt mir alle Nutzer in der SQL Datenbank
 export async function getUsers(req: Request, res: Response) {
   const connection = await connect();
   const repo = connection.getRepository(User);
