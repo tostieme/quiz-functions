@@ -55,7 +55,7 @@ export async function signup(req: Request, res: Response) {
         displayName,
       });
       // Updated die User Rolle zu "user" - Standard
-      const role = "admin";
+      const role = "user";
       await admin.auth().setCustomUserClaims(uid, { role });
 
       // Save the new User in the SQL Database
@@ -66,6 +66,7 @@ export async function signup(req: Request, res: Response) {
       newUser.email = email;
       newUser.role = role;
       newUser.name = name;
+      newUser.displayName = displayName;
       newUser.surname = surname;
       newUser.nameOfOrga = nameOfOrga;
       newUser.adressOfOrgaStreet = adressOfOrgaStreet;
@@ -186,4 +187,37 @@ export async function getUsers(req: Request, res: Response) {
 
   const allUsers = await repo.find();
   return res.send(allUsers);
+}
+
+export async function deleteUser(req: Request, res: Response) {
+  try {
+    // Lösche Nutzer aus Authentication TAB
+    const { id } = req.params;
+    await admin.auth().deleteUser(id);
+
+    // Lösche Nutzer aus SQL Database
+    const connection = await connect();
+    const userRepo = connection.getRepository(User);
+    await userRepo.delete({ userID: id });
+
+    return res.send({ message: "User deleted successfully" });
+  } catch (err) {
+    return handleError(res, err);
+  }
+}
+
+// nur zum aufräumen
+export async function deleteUserFromDaba(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+
+    // Lösche Nutzer aus SQL Database
+    const connection = await connect();
+    const userRepo = connection.getRepository(User);
+    await userRepo.delete({ userID: id });
+
+    return res.send({ message: "User deleted successfully" });
+  } catch (err) {
+    return handleError(res, err);
+  }
 }
