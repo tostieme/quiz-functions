@@ -2,9 +2,10 @@ import { Request, Response } from "express";
 import * as admin from "firebase-admin";
 import { User } from "../entity/User";
 import { connect } from "../util/connectSQL";
-import { validateLoginData } from "../util/validators";
+import { isEmail, validateLoginData } from "../util/validators";
 import auth from "firebase";
 import { handleError } from "../util/errorHandler";
+import { user } from "firebase-functions/lib/providers/auth";
 
 export async function signup(req: Request, res: Response) {
   {
@@ -22,7 +23,6 @@ export async function signup(req: Request, res: Response) {
         adressOfOrgaPostalCode,
       } = req.body;
       // For matching valid email adress
-      const regEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
       if (
         !displayName ||
@@ -40,7 +40,7 @@ export async function signup(req: Request, res: Response) {
       if (password !== confirmPassword) {
         return res.status(400).send({ message: "Passwords are not matching " });
       }
-      if (!email.match(regEx))
+      if (!isEmail(email))
         return res.status(400).send({ message: "Not a valid Email adress " });
 
       if (!(adressOfOrgaPostalCode.toString().length === 5))
@@ -136,7 +136,6 @@ export async function createAdminUser(req: Request, res: Response) {
       adressOfOrgaPostalCode,
     } = req.body;
     // For matching valid email adress
-    const regEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
     if (
       !email ||
@@ -154,7 +153,7 @@ export async function createAdminUser(req: Request, res: Response) {
     if (password !== confirmPassword) {
       return res.status(400).send({ message: "Passwords are not matching " });
     }
-    if (!email.match(regEx))
+    if (!isEmail(email))
       return res.status(400).send({ message: "Not a valid Email adress " });
 
     if (!(adressOfOrgaPostalCode.toString().length === 5))
@@ -299,8 +298,28 @@ export async function deleteUserFromDaba(req: Request, res: Response) {
   }
 }
 
+// promotes a User to an admin
 export async function promoteRole(req: Request, res: Response) {
-  const { uid } = req.params;
-  const role = "admin";
-  await admin.auth().setCustomUserClaims(uid, { role });
+  try {
+    const { uid } = req.params;
+    const role = "admin";
+    await admin.auth().setCustomUserClaims(uid, { role });
+
+    const connection = await connect();
+    const userRepo = connection.getRepository(User);
+    const userToUpdate = await userRepo.findOne({ userID: uid });
+    userToUpdate.role = role;
+    await userRepo.save(userToUpdate);
+
+    return res.send({ message: "Promoted User to Admin!" });
+  } catch (err) {
+    return handleError(res, err);
+  }
 }
+
+export async function updateUserData(req: Request, res: Response) {
+  const { uid } = req.params;
+}
+
+//TODO changePassword
+//TODO changeEmail
