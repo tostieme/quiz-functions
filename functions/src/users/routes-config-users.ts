@@ -22,5 +22,5 @@ export function routesConfigUsers(app: Application) {
   app.post("/adminUser", createAdminUser);
   app.delete("/users/:id", deleteUser); // TODO: Muss Admin Route sein
   // Nur zum aufräumen in der Daba
-  app.delete("/daba/:id", deleteUserFromDaba);
+  app.delete("/daba/:id", deleteUserFromDaba); //
 }
