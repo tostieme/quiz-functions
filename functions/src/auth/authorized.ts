@@ -9,9 +9,6 @@ export async function isAuthorizedAsUser(
   try {
     console.log("In isAuthorizedAsUser Try Block");
     const { role } = res.locals;
-    // const { id } = req.params;
-
-    // if (opts.allowSameUser && id && uid === id) return next();
 
     if (!role) return res.status(403).send();
 
@@ -29,9 +26,6 @@ export async function isAuthorizedAsAdmin(
   try {
     console.log("In isAuthorizedAsAdmin Try Block");
     const { role } = res.locals;
-    // const { id } = req.params;
-
-    // if (opts.allowSameUser && id && uid === id) return next();
 
     if (!role) return res.status(403).send();
 

@@ -10,6 +10,12 @@ export function isEmail(email) {
   else return false;
 }
 
+export function checkFileType(mimetype) {
+  const filetype = mimetype.split("/")[0];
+  if (filetype !== "image") return false;
+  else return true;
+}
+
 function isEmpty(string) {
   if (string.trim() === "") return true;
   else return false;
