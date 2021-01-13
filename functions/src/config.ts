@@ -5,7 +5,7 @@ import "reflect-metadata";
 export const prod = process.env.NODE_ENV === "production";
 
 export const sqlConfig: ConnectionOptions = {
-  name: "fun",
+  name: "users",
   type: "mysql",
   host: "127.0.0.1",
   port: 3306,
@@ -22,7 +22,7 @@ export const sqlConfig: ConnectionOptions = {
     logging: false,
     // synchronize: false,
     extra: {
-      socketPath: "/cloudsql/quiz-functions-c9bae:europe-west3:quiz-functions", // change
+      socketPath: "/cloudsql/fire-quizduell:europe-west3:users", // change
     },
   }),
 };

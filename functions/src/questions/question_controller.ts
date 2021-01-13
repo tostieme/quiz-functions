@@ -4,12 +4,12 @@ import { handleError } from "../util/errorHandler";
 import auth from "firebase";
 
 // import file handling stuff
-import * as BusBoy from "busboy";
-import * as path from "path";
-import * as os from "os";
-import * as fs from "fs";
-import { checkFileType } from "../util/validators";
-import { firebaseConfig } from "../config";
+// import * as BusBoy from "busboy";
+// import * as path from "path";
+// import * as os from "os";
+// import * as fs from "fs";
+// import { checkFileType } from "../util/validators";
+// import { firebaseConfig } from "../config";
 
 export async function getAllQuestions(req: Request, res: Response) {
   try {
@@ -95,43 +95,43 @@ export async function deleteQuestion(req: Request, res: Response) {
 }
 
 // handle file upload
-export async function uploadFiles(req: Request, res: Response) {
-  const busboy = new BusBoy({ headers: req.headers });
-  let imageFilename: string;
-  let filepath;
-  let mimetypeGlob;
+// export async function uploadFiles(req: Request, res: Response) {
+//   const busboy = new BusBoy({ headers: req.headers });
+//   let imageFilename: string;
+//   let filepath;
+//   let mimetypeGlob;
 
-  busboy.on("file", function (fieldname, file, filename, encoding, mimetype) {
-    console.log(fieldname);
-    console.log(filename);
-    console.log(mimetype);
-    if (!checkFileType(mimetype)) {
-      return res.status(400).send({ error: "Wrong file type submitted" });
-    }
-    // image.png
-    const imageExtension = filename.split(".")[filename.split(".").length - 1];
-    imageFilename = `${Math.round(
-      Math.random() * 1000000000
-    )}.${imageExtension}`;
+//   busboy.on("file", function (fieldname, file, filename, encoding, mimetype) {
+//     console.log(fieldname);
+//     console.log(filename);
+//     console.log(mimetype);
+//     if (!checkFileType(mimetype)) {
+//       return res.status(400).send({ error: "Wrong file type submitted" });
+//     }
+//     // image.png
+//     const imageExtension = filename.split(".")[filename.split(".").length - 1];
+//     imageFilename = `${Math.round(
+//       Math.random() * 1000000000
+//     )}.${imageExtension}`;
 
-    filepath = path.join(os.tmpdir(), imageFilename);
-    mimetypeGlob = mimetype;
+//     filepath = path.join(os.tmpdir(), imageFilename);
+//     mimetypeGlob = mimetype;
 
-    file.pipe(fs.createWriteStream(filepath));
-  });
-  busboy.on("finish", function () {
-    admin
-      .storage()
-      .bucket()
-      .upload(filepath, {
-        resumable: false,
-        metadata: {
-          metadata: {
-            contentType: mimetypeGlob,
-          },
-        },
-      });
-    const imageURL = `https://firebasestorage.googleapis.com/v0/b/${firebaseConfig.storageBucket}/o/${imageFilename}?alt=media`;
-    //await admin.firestore().doc(`/questions/${req.})
-  });
-}
+//     file.pipe(fs.createWriteStream(filepath));
+//   });
+//   busboy.on("finish", function () {
+//     admin
+//       .storage()
+//       .bucket()
+//       .upload(filepath, {
+//         resumable: false,
+//         metadata: {
+//           metadata: {
+//             contentType: mimetypeGlob,
+//           },
+//         },
+//       });
+//     //const imageURL = `https://firebasestorage.googleapis.com/v0/b/${firebaseConfig.storageBucket}/o/${imageFilename}?alt=media`;
+//     //await admin.firestore().doc(`/questions/${req.})
+//   });
+// }
