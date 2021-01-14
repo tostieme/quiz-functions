@@ -10,10 +10,12 @@ export function isEmail(email) {
   else return false;
 }
 
-export function checkFileType(mimetype) {
+export function isCorrectFileType(mimetype) {
   const filetype = mimetype.split("/")[0];
-  if (filetype !== "image") return false;
-  else return true;
+  console.log(filetype);
+  if (filetype === "image" || filetype === "audio" || filetype === "video")
+    return true;
+  else return false;
 }
 
 function isEmpty(string) {

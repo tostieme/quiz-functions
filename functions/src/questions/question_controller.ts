@@ -2,14 +2,16 @@ import { Request, Response } from "express";
 import * as admin from "firebase-admin";
 import { handleError } from "../util/errorHandler";
 import auth from "firebase";
+// import { v4 as uuidv4 } from "uuid";
 
 // import file handling stuff
-// import * as BusBoy from "busboy";
-// import * as path from "path";
-// import * as os from "os";
-// import * as fs from "fs";
-// import { checkFileType } from "../util/validators";
-// import { firebaseConfig } from "../config";
+import * as BusBoy from "busboy";
+import * as path from "path";
+import * as os from "os";
+import * as fs from "fs";
+// import { isCorrectFileType } from "../util/validators";
+import { firebaseConfig } from "../config";
+import { _onRequestWithOptions } from "firebase-functions/lib/providers/https";
 
 export async function getAllQuestions(req: Request, res: Response) {
   try {
@@ -94,44 +96,53 @@ export async function deleteQuestion(req: Request, res: Response) {
   }
 }
 
+// Vielleicht besser im Frontend wegen der URL?
 // handle file upload
 // export async function uploadFiles(req: Request, res: Response) {
-//   const busboy = new BusBoy({ headers: req.headers });
-//   let imageFilename: string;
-//   let filepath;
-//   let mimetypeGlob;
-
-//   busboy.on("file", function (fieldname, file, filename, encoding, mimetype) {
-//     console.log(fieldname);
-//     console.log(filename);
-//     console.log(mimetype);
-//     if (!checkFileType(mimetype)) {
-//       return res.status(400).send({ error: "Wrong file type submitted" });
-//     }
-//     // image.png
-//     const imageExtension = filename.split(".")[filename.split(".").length - 1];
-//     imageFilename = `${Math.round(
-//       Math.random() * 1000000000
-//     )}.${imageExtension}`;
-
-//     filepath = path.join(os.tmpdir(), imageFilename);
-//     mimetypeGlob = mimetype;
-
-//     file.pipe(fs.createWriteStream(filepath));
-//   });
-//   busboy.on("finish", function () {
-//     admin
-//       .storage()
-//       .bucket()
-//       .upload(filepath, {
-//         resumable: false,
-//         metadata: {
+//   try {
+//     console.log("In Try Block");
+//     const busboy = new BusBoy({ headers: req.headers });
+//     let imageFilename;
+//     let filepath;
+//     let mimetypeGlob;
+//     // let imageURL: string = "";
+//     console.log("Vor Busboy.on");
+//     busboy.on("file", function (fieldname, file, filename, encoding, mimetype) {
+//       console.log("In Busboy on");
+//       console.log(fieldname);
+//       console.log(filename);
+//       console.log(mimetype);
+//       // image.png
+//       const imageExtension = filename.split(".")[
+//         filename.split(".").length - 1
+//       ];
+//       imageFilename = `${Math.round(
+//         Math.random() * 1000000000
+//       )}.${imageExtension}`;
+//       filepath = path.join(os.tmpdir(), imageFilename);
+//       mimetypeGlob = mimetype;
+//       file.pipe(fs.createWriteStream(filepath));
+//     });
+//     console.log("Vor busboy.on finish");
+//     busboy.on("finish", function () {
+//       console.log("in busboy.on finish");
+//       admin
+//         .storage()
+//         .bucket()
+//         .upload(filepath, {
+//           resumable: false,
 //           metadata: {
-//             contentType: mimetypeGlob,
+//             metadata: {
+//               contentType: mimetypeGlob,
+//               // firebaseStorageDownloadTokens: uuidv4(),
+//             },
 //           },
-//         },
-//       });
-//     //const imageURL = `https://firebasestorage.googleapis.com/v0/b/${firebaseConfig.storageBucket}/o/${imageFilename}?alt=media`;
-//     //await admin.firestore().doc(`/questions/${req.})
-//   });
+//         });
+//     });
+//     res.end();
+//     const imageURL = `https://firebasestorage.googleapis.com/v0/b/${firebaseConfig.storageBucket}/o/${imageFilename}?alt=media`;
+//     return res.status(200).send(imageURL);
+//   } catch (err) {
+//     return handleError(res, err);
+//   }
 // }
