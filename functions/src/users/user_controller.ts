@@ -95,7 +95,7 @@ export async function login(req: Request, res: Response) {
       return res
         .status(400)
         .send({ message: "Email or Password must not be empty" });
-
+    console.log(user.email, user.password);
     await auth.auth().signInWithEmailAndPassword(user.email, user.password);
     const idToken = await auth.auth().currentUser.getIdToken();
     return res.status(200).send(idToken);

@@ -29,11 +29,11 @@ export const sqlConfig: ConnectionOptions = {
 
 export const firebaseConfig = {
   // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  apiKey: "AIzaSyDdMak4fnpI16b9Rfj7cPIR7vgrTegmjDA",
-  authDomain: "quiz-functions-c9bae.firebaseapp.com",
-  projectId: "quiz-functions-c9bae",
-  storageBucket: "quiz-functions-c9bae.appspot.com",
-  messagingSenderId: "97116656288",
-  appId: "1:97116656288:web:f4d83572a04c55b9972fc5",
-  measurementId: "G-GPN9EGX0Z2",
+  apiKey: "AIzaSyBUXNmZ7OCxQAhTUZKPkLyLO8sWn2-PmRE",
+  authDomain: "fire-quizduell.firebaseapp.com",
+  projectId: "fire-quizduell",
+  storageBucket: "fire-quizduell.appspot.com",
+  messagingSenderId: "11323579019",
+  appId: "1:11323579019:web:134084970adf9a43bad28e",
+  measurementId: "G-1N8WP0X5CV",
 };

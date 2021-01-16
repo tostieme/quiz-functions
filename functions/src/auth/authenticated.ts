@@ -26,7 +26,6 @@ export async function isAuthenticated(
       email: decodedToken.email,
       displayName: decodedToken.displayName,
     };
-    console.log("Springe jetzt in authorized function");
     return next();
   } catch (err) {
     console.error(`${err.code} -  ${err.message}`);

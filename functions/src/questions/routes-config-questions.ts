@@ -4,7 +4,6 @@ import {
   deleteQuestion,
   getAllQuestions,
   getOneQuestion,
-  uploadFiles,
 } from "./question_controller";
 import { isAuthenticated } from "../auth/authenticated";
 import { isAuthorizedAsAdmin } from "../auth/authorized";
@@ -25,5 +24,5 @@ export function routesConfigQuestions(app: Application) {
     isAuthorizedAsAdmin,
     deleteQuestion
   );
-  app.post("/question/file", uploadFiles);
+  // app.post("/question/file", uploadFiles);
 }

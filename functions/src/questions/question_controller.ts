@@ -4,13 +4,13 @@ import { handleError } from "../util/errorHandler";
 import auth from "firebase";
 // import { v4 as uuidv4 } from "uuid";
 
-// import file handling stuff
-import * as BusBoy from "busboy";
-import * as path from "path";
-import * as os from "os";
-import * as fs from "fs";
-// import { isCorrectFileType } from "../util/validators";
-import { firebaseConfig } from "../config";
+// // import file handling stuff
+// import * as BusBoy from "busboy";
+// import * as path from "path";
+// import * as os from "os";
+// import * as fs from "fs";
+// // import { isCorrectFileType } from "../util/validators";
+// import { firebaseConfig } from "../config";
 import { _onRequestWithOptions } from "firebase-functions/lib/providers/https";
 
 export async function getAllQuestions(req: Request, res: Response) {
@@ -19,8 +19,7 @@ export async function getAllQuestions(req: Request, res: Response) {
     const snapshot = await admin.firestore().collection("questions").get();
     snapshot.forEach((doc) => {
       questions.push({
-        questionID: doc.id,
-        testFeld: doc.data().testFeld,
+        ...doc,
       });
     });
     return res.json(questions);
@@ -48,13 +47,13 @@ export async function getOneQuestion(req: Request, res: Response) {
 
 export async function createOneQuestion(req: Request, res: Response) {
   try {
+    // TODO: Hinzufügen weiterer Checks
     if (req.body.questionBody.trim() === "") {
       return res.status(400).json({ body: "Body must ne not empty" });
     }
     const { displayName } = res.locals;
     const questionCollection = admin.firestore().collection("questions");
     await questionCollection.add({
-      testFeld: req.body.testFeld,
       questionBody: req.body.questionBody,
       correctAnswer: req.body.correctAnswer,
       wrongAnswer1: req.body.wrongAnswer1,
