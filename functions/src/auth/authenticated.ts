@@ -19,12 +19,13 @@ export async function isAuthenticated(
     const decodedToken: admin.auth.DecodedIdToken = await admin
       .auth()
       .verifyIdToken(token);
+
     console.log("decodedToken", JSON.stringify(decodedToken));
     res.locals = {
       uid: decodedToken.uid,
       role: decodedToken.role,
       email: decodedToken.email,
-      displayName: decodedToken.displayName,
+      displayName: decodedToken.name,
     };
     return next();
   } catch (err) {
