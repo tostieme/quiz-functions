@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import * as admin from "firebase-admin";
 import { handleError } from "../util/errorHandler";
-import auth from "firebase";
+import firebase from "firebase";
 // import { v4 as uuidv4 } from "uuid";
 
 // // import file handling stuff
@@ -52,6 +52,7 @@ export async function createOneQuestion(req: Request, res: Response) {
       return res.status(400).json({ body: "Body must ne not empty" });
     }
     const { displayName } = res.locals;
+    console.log(displayName);
     const questionCollection = admin.firestore().collection("questions");
     await questionCollection.add({
       questionBody: req.body.questionBody,
@@ -78,7 +79,7 @@ export async function deleteQuestion(req: Request, res: Response) {
       .firestore()
       .doc(`/questions/${req.params.questionID}`);
     const documentSnapshot = document.get();
-    const currentUserDisplayName = auth.auth().currentUser.displayName;
+    const currentUserDisplayName = firebase.auth().currentUser.displayName;
     if (!(await documentSnapshot).exists) {
       return res.status(403).send({ error: "Question not found" });
     }

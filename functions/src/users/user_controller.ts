@@ -3,7 +3,7 @@ import * as admin from "firebase-admin";
 import { User } from "../entity/User";
 import { connect } from "../util/connectSQL";
 import { isEmail, validateLoginData } from "../util/validators";
-import auth from "firebase";
+import firebase from "firebase";
 import { handleError } from "../util/errorHandler";
 
 export async function signup(req: Request, res: Response) {
@@ -96,8 +96,8 @@ export async function login(req: Request, res: Response) {
         .status(400)
         .send({ message: "Email or Password must not be empty" });
     console.log(user.email, user.password);
-    await auth.auth().signInWithEmailAndPassword(user.email, user.password);
-    const idToken = await auth.auth().currentUser.getIdToken();
+    await firebase.auth().signInWithEmailAndPassword(user.email, user.password);
+    const idToken = await firebase.auth().currentUser.getIdToken();
     return res.status(200).send(idToken);
   } catch (error) {
     return handleError(res, error);
@@ -105,11 +105,11 @@ export async function login(req: Request, res: Response) {
 }
 
 export async function logout(req: Request, res: Response) {
-  const user = auth.auth().currentUser;
+  const user = firebase.auth().currentUser;
   if (user) {
     try {
       // User is signed in
-      await auth.auth().signOut();
+      await firebase.auth().signOut();
       return res.send({ general: "Sign-out successfull!" });
     } catch (error) {
       return handleError(res, error);
