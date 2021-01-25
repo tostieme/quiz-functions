@@ -70,6 +70,7 @@ export async function createOneQuestion(req: Request, res: Response) {
     }
   
     const { displayName } = res.locals;
+    console.log(displayName);
     const questionCollection = admin.firestore().collection("questions");
     await questionCollection.add({
       questionBody: req.body.questionBody,

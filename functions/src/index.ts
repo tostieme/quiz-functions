@@ -5,10 +5,10 @@ import * as cors from "cors";
 import * as bodyParser from "body-parser";
 import { routesConfigUsers } from "./users/routes-config-users";
 import { routesConfigQuestions } from "./questions/routes-config-questions";
-import auth from "firebase";
+import firebase from "firebase";
 import { firebaseConfig } from "./config";
 
-auth.initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig);
 admin.initializeApp();
 const app = express();
 app.use(bodyParser.json());
