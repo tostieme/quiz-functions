@@ -106,6 +106,11 @@ export async function login(req: Request, res: Response) {
 
 export async function logout(req: Request, res: Response) {
   const user = auth.auth().currentUser;
+  user.getIdToken(true).then(function(idToken){
+
+  }).catch(function(error) {
+  
+  });
   if (user) {
     try {
       // User is signed in

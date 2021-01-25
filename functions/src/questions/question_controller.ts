@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import * as admin from "firebase-admin";
 import { handleError } from "../util/errorHandler";
 import auth from "firebase";
+import jwt_decode from 'jwt-decode';
 // import { v4 as uuidv4 } from "uuid";
 
 // // import file handling stuff
@@ -14,14 +15,30 @@ import auth from "firebase";
 import { _onRequestWithOptions } from "firebase-functions/lib/providers/https";
 
 export async function getAllQuestions(req: Request, res: Response) {
-  try {
+
+ 
+
+
+
+ try {
     let questions = [];
+   
     const snapshot = await admin.firestore().collection("questions").get();
-    snapshot.forEach((doc) => {
-      questions.push({
-        ...doc,
-      });
-    });
+  snapshot.forEach((doc) => {
+    const data = doc.data();
+    const currentUser = req.headers.authorization;
+    var currentUserDecoded = jwt_decode(currentUser)
+    console.log(currentUserDecoded);
+    console.log(data);
+    if(data["displayName"]==currentUserDecoded["name"]){
+   data["id"]=doc.id;
+  
+      questions.push( data);
+    }
+      console.log(questions);
+
+     } );
+     
     return res.json(questions);
   } catch (error) {
     return handleError(res, error);
@@ -51,6 +68,7 @@ export async function createOneQuestion(req: Request, res: Response) {
     if (req.body.questionBody.trim() === "") {
       return res.status(400).json({ body: "Body must ne not empty" });
     }
+  
     const { displayName } = res.locals;
     const questionCollection = admin.firestore().collection("questions");
     await questionCollection.add({
@@ -62,14 +80,57 @@ export async function createOneQuestion(req: Request, res: Response) {
       imageUrl: req.body.imageUrl,
       videoUrl: req.body.videoUrl,
       audioUrl: req.body.audioUrl,
+      testFeld: req.body.testFeld,
       createdAt: new Date().toISOString(),
       displayName: displayName,
     });
     return res.status(200).send({ message: "Question added successfully!" });
   } catch (error) {
+    console.log(error);
     return handleError(res, error);
   }
 }
+
+//edit a question
+
+export async  function editQuestion(req:Request, res: Response){
+  try {
+    const document = await admin
+      .firestore()
+      .doc(`/questions/${req.params.questionID}`);
+      console.log(document);
+    const documentSnapshot = document.get();
+
+    const currentUserDisplayName = res.locals.displayName;
+    console.log(currentUserDisplayName);
+    console.log(req.body);
+    console.log(req.body[0]);
+    if (!(await documentSnapshot).exists) {
+      return res.status(403).send({ error: "Question not found" });
+    }
+    if (
+      (await documentSnapshot).data().displayName !== currentUserDisplayName
+    ) {
+      return res.status(403).send({ error: "Unauthorized" });
+    } else {
+      await document.update(req.body[0]);
+     /* await document.update({questionBody: req.body.questionBody,
+        correctAnswer: req.body.correctAnswer,
+        wrongAnswer1: req.body.wrongAnswer1,
+        wrongAnswer2: req.body.wrongAnswer2,
+        wrongAnswer3: req.body.wrongAnswer3,
+        imageUrl: req.body.imageUrl,
+        videoUrl: req.body.videoUrl,
+        audioUrl: req.body.audioUrl,
+        testFeld: req.body.testFeld});*/
+      return res.send({ message: "Question was Added" });
+    }
+  } catch (error) {
+    return handleError(res, error);
+  }
+}
+
+  
 
 //delete a question
 export async function deleteQuestion(req: Request, res: Response) {
@@ -78,7 +139,12 @@ export async function deleteQuestion(req: Request, res: Response) {
       .firestore()
       .doc(`/questions/${req.params.questionID}`);
     const documentSnapshot = document.get();
-    const currentUserDisplayName = auth.auth().currentUser.displayName;
+    console.log("BAMBI");
+    console.log(res.locals);
+    console.log(auth.auth());
+    const currentUserDisplayName = res.locals.displayName;
+    console.log(currentUserDisplayName);
+    console.log(auth.auth().currentUser);
     if (!(await documentSnapshot).exists) {
       return res.status(403).send({ error: "Question not found" });
     }

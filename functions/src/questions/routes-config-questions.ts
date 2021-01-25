@@ -2,6 +2,7 @@ import { Application } from "express";
 import {
   createOneQuestion,
   deleteQuestion,
+  editQuestion,
   getAllQuestions,
   getOneQuestion,
 } from "./question_controller";
@@ -18,6 +19,8 @@ export function routesConfigQuestions(app: Application) {
     isAuthorizedAsAdmin,
     createOneQuestion
   );
+  app.put("/question/:questionID", isAuthenticated,
+  isAuthorizedAsAdmin,editQuestion);
   app.delete(
     "/question/:questionID",
     isAuthenticated,
