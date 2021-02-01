@@ -15,11 +15,6 @@ import jwt_decode from 'jwt-decode';
 import { _onRequestWithOptions } from "firebase-functions/lib/providers/https";
 
 export async function getAllQuestions(req: Request, res: Response) {
-
- 
-
-
-
  try {
     let questions = [];
    
@@ -44,7 +39,26 @@ export async function getAllQuestions(req: Request, res: Response) {
     return handleError(res, error);
   }
 }
-
+export async function getAllQuestionsView(req: Request, res: Response) {
+  try {
+     let questions = [];
+    
+     const snapshot = await admin.firestore().collection("questions").get();
+   snapshot.forEach((doc) => {
+     const data = doc.data();
+   
+   
+       questions.push( data);
+  
+ 
+ 
+      } );
+      
+     return res.json(questions);
+   } catch (error) {
+     return handleError(res, error);
+   }
+ }
 export async function getOneQuestion(req: Request, res: Response) {
   try {
     const snapshot = await admin
@@ -115,15 +129,7 @@ export async  function editQuestion(req:Request, res: Response){
       return res.status(403).send({ error: "Unauthorized" });
     } else {
       await document.update(req.body[0]);
-     /* await document.update({questionBody: req.body.questionBody,
-        correctAnswer: req.body.correctAnswer,
-        wrongAnswer1: req.body.wrongAnswer1,
-        wrongAnswer2: req.body.wrongAnswer2,
-        wrongAnswer3: req.body.wrongAnswer3,
-        imageUrl: req.body.imageUrl,
-        videoUrl: req.body.videoUrl,
-        audioUrl: req.body.audioUrl,
-        testFeld: req.body.testFeld});*/
+  
       return res.send({ message: "Question was Added" });
     }
   } catch (error) {
@@ -131,7 +137,30 @@ export async  function editQuestion(req:Request, res: Response){
   }
 }
 
-  
+  export async function getFilteredQuestions(req: Request, res:Response){
+    let questions = [];
+    var testfeld=req.query.testfeld;
+    console.log(req.params)
+    try{
+    const snapshot = await admin
+    .firestore()
+    .collection("questions")
+    .where("testFeld","==",testfeld)
+    .get()
+    snapshot.forEach((doc) =>{
+      const data = doc.data();
+      questions.push( data);
+    })
+    return res.json(questions);
+  }catch (error) {
+    console.log(error);
+    return handleError(res, error);
+  }
+
+    
+
+
+  }
 
 //delete a question
 export async function deleteQuestion(req: Request, res: Response) {
@@ -140,7 +169,7 @@ export async function deleteQuestion(req: Request, res: Response) {
       .firestore()
       .doc(`/questions/${req.params.questionID}`);
     const documentSnapshot = document.get();
-    console.log("BAMBI");
+ 
     console.log(res.locals);
     console.log(auth.auth());
     const currentUserDisplayName = res.locals.displayName;

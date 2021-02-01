@@ -4,6 +4,8 @@ import {
   deleteQuestion,
   editQuestion,
   getAllQuestions,
+  getAllQuestionsView,
+  getFilteredQuestions,
   getOneQuestion,
 } from "./question_controller";
 import { isAuthenticated } from "../auth/authenticated";
@@ -13,6 +15,8 @@ import { isAuthorizedAsAdmin } from "../auth/authorized";
 export function routesConfigQuestions(app: Application) {
   app.get("/questions", getAllQuestions);
   app.get("/question/:questionID", getOneQuestion);
+  app.get("/questionFilter",getFilteredQuestions);
+  app.get("/allquestion",getAllQuestionsView);
   app.post(
     "/question",
     isAuthenticated,
